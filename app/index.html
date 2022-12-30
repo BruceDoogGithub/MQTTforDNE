@@ -33,11 +33,14 @@
             changeType();
         }
         let tim = null;
-        var msg = "";
+        var msg = "debug msg";
         function check(){
             document.getElementById("check").disabled = true;
             var sel = document.getElementById("select");
-            while(sel.hasChildNodes() && sel.childNodes.length > 0) sel.removeChild(sel.firstChild);
+            while(sel.hasChildNodes() && sel.childNodes.length > 0) {
+              sel.removeChild(sel.firstChild);
+            }
+
             msg = "Connect fail = ";
             client_retry = true;
             tryConnectFirst();
@@ -110,12 +113,15 @@
         }
     </script>
 </head>
+
+
 <body onload="load();">
 <h1><b>Application Folder</b></h1>
 <hr>
 <a href="readme-check.html">If you can NOT use samples, please check this.</a><br>
 <a href="readme-original.html">If you use original application, please read this.</a><br>
 <hr>
+
 <div style="font-size:120%;margin-bottom:5px;"><b>[Cookie] MQTT over WebSocket</b></div>
 <span style="display:inline-block;width:120px;font-size:120%;">- address </span><input type="text" size="15" id="address" style="font-size:120%;background-color:#DFDFDF;"><br>
 <span style="display:inline-block;width:120px;font-size:120%;">- port </span><input type="text" size="15" id="port" style="font-size:120%;"><br>
@@ -125,6 +131,9 @@
 <hr>
 <div style="font-size:120%;margin-bottom:5px;"><b>Check connection / Select robot</b></div>
 <input style="height:30px;width:80px;font-size:120%;" type="button" id="check" value="do" onclick="check();"> <select id="select" size="1" style="font-size:120%;width:240px;" onChange="select();"></select><br>
+
+
+
 <hr>
 <h3><b><a class="app" href="../user/">Here is user original application.</a></b></h3>
 <hr>
