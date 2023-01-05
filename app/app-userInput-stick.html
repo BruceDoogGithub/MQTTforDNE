@@ -23,6 +23,7 @@
                 document.getElementById("m3").style.backgroundColor = (from_json.mode == 3)?"#FFF100":"#FFFFFF";
                 document.getElementById("m4").style.backgroundColor = (from_json.mode == 4)?"#FFF100":"#FFFFFF";
             }
+
         }
     </script>
     <style type="text/css">
@@ -64,6 +65,7 @@
 </head>
 <body style="height:100%;margin:0;" onload="tryConnectFirst();">
 <div id="status" class="area" style="height:8%;font-size:7vmin;">Connecting...</div>
+<h3><b>*Only for touch monitor use</b></h3>
 <div class="area" style="height:12%;font-size:6vmin;">
     <div class="button" style="width:20%;" onclick="publishCmd('#speedmode_0');" id="m0"><span class="text">0</span></div>
     <div class="button" style="width:20%;" onclick="publishCmd('#speedmode_1');" id="m1"><span class="text">1</span></div>
