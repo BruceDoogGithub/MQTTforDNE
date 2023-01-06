@@ -23,18 +23,16 @@
                 document.getElementById("m3").style.backgroundColor = (from_json.mode == 3)?"#FFF100":"#FFFFFF";
                 document.getElementById("m4").style.backgroundColor = (from_json.mode == 4)?"#FFF100":"#FFFFFF";
             }
-
         }
     </script>
     <style type="text/css">
     <!--
     .stick{
         position: absolute;
-        --size: 80vmin;
-        left: calc(50% - var(--size)/2);
-        top: calc(60% - var(--size)/2);
-        width: var(--size);
-        height: var(--size);
+        left: calc(50% - 80vmin/2);
+        top: calc(60% - 80vmin/2);
+        width: 80vmin;
+        height: 80vmin;
         border: 2px solid #232323;
         border-radius: 50%;
         box-sizing: border-box;
@@ -46,11 +44,10 @@
     }
     .stick-init{
         position: absolute;
-        --size: 16vmin;
-        left: calc(50% - var(--size)/2);
-        top: calc(60% - var(--size)/2);
-        width: var(--size);
-        height: var(--size);
+        left: calc(50% - 16vmin/2);
+        top: calc(60% - 16vmin/2);
+        width: 16vmin;
+        height: 16vmin;
         border: 2px solid #232323;
         border-radius: 50%;
         box-sizing: border-box;
@@ -65,7 +62,6 @@
 </head>
 <body style="height:100%;margin:0;" onload="tryConnectFirst();">
 <div id="status" class="area" style="height:8%;font-size:7vmin;">Connecting...</div>
-<h3><b>*Only for touch monitor use</b></h3>
 <div class="area" style="height:12%;font-size:6vmin;">
     <div class="button" style="width:20%;" onclick="publishCmd('#speedmode_0');" id="m0"><span class="text">0</span></div>
     <div class="button" style="width:20%;" onclick="publishCmd('#speedmode_1');" id="m1"><span class="text">1</span></div>

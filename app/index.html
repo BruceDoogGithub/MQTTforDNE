@@ -33,15 +33,14 @@
             changeType();
         }
         let tim = null;
-        var msg = "debug msg";
+        var msg = "";
         function check(){
-            document.getElementById("check").disabled = true;
             var sel = document.getElementById("select");
-            while(sel.hasChildNodes() && sel.childNodes.length > 0) {
-              sel.removeChild(sel.firstChild);
-            }
-
-            msg = "Connect fail = ";
+            document.getElementById("check").disabled = true;
+            document.getElementById("check").value = "--";
+            sel.disabled = true;
+            while(sel.hasChildNodes() && sel.childNodes.length > 0) sel.removeChild(sel.firstChild);
+            msg = "Failed = ";
             client_retry = true;
             tryConnectFirst();
             tim = setTimeout(disconnect, 5000);
@@ -76,15 +75,16 @@
             newOpt.textContent = serial;
             sel.appendChild(newOpt);
             sel.options[0].selected = true;
-
         }
         function disconnect(){
+            var sel = document.getElementById("select");
             document.getElementById("check").disabled = false;
+            document.getElementById("check").value = "do";
+            sel.disabled = false;
             unsubscribe("0/WHISPERER/+/battery");
             unsubscribe("0/WHISPERER/+/speedmode");
             client_retry = false;
             if(client != null && client_connected) client.disconnect();
-            var sel = document.getElementById("select");
             var cnt = (sel.hasChildNodes() && sel.childNodes.length > 0?sel.childNodes.length:"0");
             alert(msg + cnt);
             if(cnt != "0") select();
@@ -113,17 +113,14 @@
         }
     </script>
 </head>
-
-
 <body onload="load();">
 <h1><b>Application Folder</b></h1>
 <hr>
 <a href="readme-check.html">If you can NOT use samples, please check this.</a><br>
 <a href="readme-original.html">If you use original application, please read this.</a><br>
 <hr>
-
 <div style="font-size:120%;margin-bottom:5px;"><b>[Cookie] MQTT over WebSocket</b></div>
-<span style="display:inline-block;width:120px;font-size:120%;">- address </span><input type="text" size="15" id="address" style="font-size:120%;background-color:#DFDFDF;"><br>
+<span style="display:inline-block;width:120px;font-size:120%;">- address </span><input type="text" size="15" id="address" style="font-size:120%;"><br>
 <span style="display:inline-block;width:120px;font-size:120%;">- port </span><input type="text" size="15" id="port" style="font-size:120%;"><br>
 <span style="display:inline-block;width:120px;font-size:120%;">- username </span><input type="text" size="15" id="username" style="font-size:120%;"><br>
 <span style="display:inline-block;width:120px;font-size:120%;">- password </span><input type="text" size="15" id="password" style="font-size:120%;" oninput="changeType();" onclick="clickType();changeType();"><br>
@@ -131,9 +128,6 @@
 <hr>
 <div style="font-size:120%;margin-bottom:5px;"><b>Check connection / Select robot</b></div>
 <input style="height:30px;width:80px;font-size:120%;" type="button" id="check" value="do" onclick="check();"> <select id="select" size="1" style="font-size:120%;width:240px;" onChange="select();"></select><br>
-
-
-
 <hr>
 <h3><b><a class="app" href="../user/">Here is user original application.</a></b></h3>
 <hr>
