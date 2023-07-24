@@ -3,11 +3,14 @@ var client_retry = true;
 var client = null;
 var mqtt_opt = null;
 var connetced_msg = "Connect success";
+var keepAlive = null;
+var autoDisconnect = null;
 
 function tryConnectFirst(){
     if(typeof loadCookie !== 'undefined') loadCookie();
     if(document.location.search.length > 2) type_and_serial = document.location.search.substring(1);
-    if(websocket_host != null && websocket_port != null && mqtt_username != null && mqtt_password != null){
+    if(websocket_host != null && websocket_port != null && websocket_username != null && websocket_password != null){
+        keepAlive = null;
         client_connected = false;
         client = new Paho.MQTT.Client(websocket_host, Number(websocket_port), "clientId" + new Date().getTime());
         client.onMessageArrived = onMessageArrived;
@@ -15,8 +18,10 @@ function tryConnectFirst(){
         connetced_msg = type_and_serial;
         mqtt_opt = {
             useSSL: false,
-            userName: mqtt_username,
-            password: (mqtt_password=="(internal_default)"?"sI7G@DijuY":mqtt_password),
+            userName: websocket_username,
+            password: (websocket_password=="(internal_default)"?"sI7G@DijuY":websocket_password),
+　　　　　　　　　　　　keepAliveInterval: 2,
+            timeout: 5,
             onSuccess: onConnect,
             onFailure: doFail
         };
@@ -28,14 +33,17 @@ function tryConnectFirst(){
 }
 
 function onConnect() {
+    keepAlive = null;
     client_connected = true;
     console.log("onConnect");
     if(connetced_msg != "Connect success") document.title = connetced_msg;
     if(document.getElementById("status") != null) document.getElementById("status").innerHTML = connetced_msg;
+    client.subscribe("0/WHISPERER/+/version"); //later DNE4.9
     onConnected();
 }
 
 function doFail() {
+    autoDisconnect = null;
     client_connected = false;
     if(client_retry) client.connect(mqtt_opt);
     console.log("doFail");
@@ -44,18 +52,36 @@ function doFail() {
 }
 
 function onConnectionLost(responseObject) {
+    autoDisconnect = null;
     client_connected = false;
     if(client_retry) client.connect(mqtt_opt);
     if (responseObject.errorCode !== 0) {
         console.log("onConnectionLost:"+responseObject.errorMessage);
     }
-    if(connetced_msg != "Connect success") document.title = "Disconected";
-    if(document.getElementById("status") != null) document.getElementById("status").innerHTML = "Disconected";
+    if(connetced_msg != "Connect success") document.title = "Disconnected";
+    if(document.getElementById("status") != null) document.getElementById("status").innerHTML = "Disconnected";
 }
 
 function onMessageArrived(message) {
     console.log('payload: ' + message.destinationName + " : " + message.payloadString);
-    subscribeParse(message);
+    if(message.destinationName.match(new RegExp("0/WHISPERER/.+/version")) != null) keepAlive = new Date(); //later DNE4.9
+    if(typeof subscribeParse == 'function') subscribeParse(message);
+}
+
+setInterval("keepAlive100()", 100);
+function keepAlive100(){
+    if(client_connected && keepAlive && new Date().getTime() - keepAlive.getTime() > 5000){ //later DNE4.9 (version topic)
+        keepAlive = null;
+        autoDisconnect = new Date();
+        client.disconnect();
+        if(connetced_msg != "Connect success") document.title = "Timeout";
+        if(document.getElementById("status") != null) document.getElementById("status").innerHTML = "Timeout";
+    }
+    if(autoDisconnect && new Date().getTime() - autoDisconnect.getTime() > 2000){
+        autoDisconnect = null;
+        client_connected = false;
+        if(client_retry) client.connect(mqtt_opt);
+    }
 }
 
 function beep() {
@@ -73,8 +99,10 @@ function subscribe(topic) {
 
 function unsubscribe(topic) {
     if(client_connected){
-        client.unsubscribe(topic);
-        console.log("unsubscribe:" + topic);
+        if(topic != "0/WHISPERER/+/version"){ //later DNE4.9
+            client.unsubscribe(topic);
+            console.log("unsubscribe:" + topic);
+        }
     }else{
         console.log("no connect");
     }
@@ -82,6 +110,9 @@ function unsubscribe(topic) {
 
 function publish(topic, msg) {
     if(client_connected){
+        if(typeof msg !== 'string'){
+            msg = JSON.stringify(msg);
+        }
         message = new Paho.MQTT.Message(msg);
         message.destinationName = topic;
         client.send(message);
@@ -111,12 +142,12 @@ function publishCmd(cmd) {
 }
 function publishVW(v, w) {
     if(typeof type_and_serial !== 'undefined'){
-        publish("0/WHISPERER/" + type_and_serial + "/navTest", "{\"v_mps\":\"" + v + "\", \"w_degps\":\"" + w + "\"}");
+        publish("0/WHISPERER/" + type_and_serial + "/navTest", "{\"v_mps\":\"" + v.toPrecision(3) + "\", \"w_degps\":\"" + w.toPrecision(2) + "\"}"); //The old topic was "navTest". This has been revised, but you can use either.
     }
 }
 function publishVW_per(v, w) {
     if(typeof type_and_serial !== 'undefined'){
-        publish("0/WHISPERER/" + type_and_serial + "/navTest", "{\"v_per\":\"" + v + "\", \"w_per\":\"" + w + "\"}");
+        publish("0/WHISPERER/" + type_and_serial + "/navTest", "{\"v_per\":\"" + v.toPrecision(3) + "\", \"w_per\":\"" + w.toPrecision(2) + "\"}"); //The old topic was "navTest". This has been revised, but you can use either.
     }
 }
 
