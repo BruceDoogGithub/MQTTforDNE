@@ -66,6 +66,9 @@
             sel.appendChild(newOpt);
             var cnt = (sel.hasChildNodes() && sel.childNodes.length > 0?sel.childNodes.length:"0");
             document.getElementById("check").value = cnt;
+            document.getElementById("check").style.backgroundColor = "while";
+            document.getElementById("check").style.border = "solid 1px black";
+            document.getElementById("check").style.color = "black";
             if(cnt == 1){
                 sel.options[0].selected = true;
                 select();
